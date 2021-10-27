@@ -1,0 +1,44 @@
+image: python:latest
+
+# services:
+#     - rabbitmq:latest
+#     - postgres:latest
+
+variables:
+  GIT_SUBMODULE_STRATEGY: recursive
+  RABBITMQ_DEFAULT_USER: guest
+  RABBITMQ_DEFAULT_PASS: password
+  AMQP_URL: "amqp://guest:password@rabbitmq:5672"
+  POSTGRES_DB: reddit
+  POSTGRES_USER: guest
+  POSTGRES_PASSWORD: password
+
+cache:
+  paths:
+    - module_name.egg-info
+    - __pypackages__
+    - .pdm.toml
+
+before_script:
+  # begin setting up ssh key
+  - "which ssh-agent || ( apt-get update -y && apt-get install openssh-client git -y )"
+  - eval $(ssh-agent -s)
+  - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add - > /dev/null
+  # note that this is set CFRL-wide
+  - mkdir -p ~/.ssh
+  - chmod 700 ~/.ssh
+  - echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+  - chmod 644 ~/.ssh/known_hosts
+  # end setting up ssh key
+  - export SCRIPTS_DIR=$(mktemp -d)
+  - git clone -q --depth 1 "$SCRIPTS_REPO" "$SCRIPTS_DIR"
+  - source $SCRIPTS_DIR/install_pdm.sh
+  - pdm install
+
+run-test:
+  only:
+    - merge_requests
+    - master
+  script:
+    - python3 --version
+    - pdm run pytest tests
