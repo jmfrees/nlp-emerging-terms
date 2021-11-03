@@ -8,6 +8,9 @@ authors = [
 dependencies = [
     "sentence-transformers~=2.1",
     "hnswlib~=0.5",
+    "gensim~=4.1",
+    "nltk~=3.6",
+    "tqdm~=4.62",
 ]
 requires-python = ">=3.8"
 dynamic = ["classifiers"]
