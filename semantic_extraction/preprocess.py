@@ -9,8 +9,11 @@ from nltk.tokenize import TweetTokenizer, sent_tokenize
 
 nltk.download("stopwords")
 nltk.download("punkt")
-# TODO: This currently only cares about english stopwords
-eng_stopwords = set(stopwords.words("english"))
+# all languages available:
+all_available_langs = stopwords.fileids()
+lang_stopwords = set()
+for lang in all_available_langs:
+    lang_stopwords = lang_stopwords.union(set(stopwords.words(lang)))
 
 
 class CorpusReader:
@@ -28,7 +31,7 @@ class CorpusReader:
                 for s in sent_tokenize(line):
                     yield list(
                         filter(
-                            lambda w: w not in eng_stopwords,
+                            lambda w: w not in lang_stopwords,
                             self.tokenizer.tokenize(s),
                         )
                     )
