@@ -4,6 +4,7 @@ version = "0.1.0"
 description = "A project for trend analysis based on NLP semantic extraction"
 authors = [
     {name = "Jonathan Frees", email = "jmfrees@uab.edu"},
+    {name = "Jan Foksinski", email = "jkf@uab.edu"}
 ]
 dependencies = [
     "sentence-transformers~=2.1",
