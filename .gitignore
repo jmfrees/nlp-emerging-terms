@@ -28,3 +28,6 @@ error*
 .pdm.toml
 __pypackages__/
 *.egg-info/
+
+semantic_extraction/models/**
+semantic_extraction/datasets/**
