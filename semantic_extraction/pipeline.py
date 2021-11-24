@@ -1,22 +1,27 @@
 # STL
 import os
-
-# PDM
-from gensim.models import Phrases, Word2Vec, TfidfModel
-from gensim.corpora import Dictionary
-from gensim.models.phrases import ENGLISH_CONNECTOR_WORDS
-
-# LOCAL
-from semantic_extraction.preprocess import CorpusReader
+import argparse
 
 
-def main():
+def main(argv):
+
+    # begin imports (no point in downloading if argv is incorrect)
+    # PDM
+    from gensim.models import Phrases, Word2Vec, TfidfModel
+    from gensim.corpora import Dictionary
+    from gensim.models.phrases import ENGLISH_CONNECTOR_WORDS
+
+    # LOCAL
+    from semantic_extraction.preprocess import CorpusReader
+
+    # end imports
+
     print("Reading data")
-    models_path = os.path.join(".", "models")
-    filename = "g4boyz5m"
-    file_ext = ".csv"
+    models_path = argv.map_dir
+    filename = argv.file
+    file_ext = argv.extension
     filepath = os.path.join(".", "datasets", filename + file_ext)
-    model_type = "tfidf"  # "tfidf" or "w2v"
+    model_type = argv.type  # "tfidf" or "w2v"
 
     data = list(CorpusReader(filepath))
 
@@ -62,4 +67,29 @@ def main():
 
 if __name__ == "__main__":
     # TODO: Add argparse
-    main()
+    parser = argparse.ArgumentParser(description="Semantic-Extraction Pipeline")
+    parser.add_argument("file", type=str, help="Name of dataset file in datasets dir")
+    parser.add_argument(
+        "-x",
+        "--extension",
+        type=str,
+        default=".csv",
+        help="Extension of the dataset file",
+    )
+    parser.add_argument(
+        "-t",
+        "--type",
+        type=str,
+        choices=["tfidf", "w2v"],
+        default="tfidf",
+        help="Model type",
+    )
+    parser.add_argument(
+        "-m",
+        "--map-dir",
+        type=str,
+        default=os.path.join(".", "models"),
+        help="Path to models dir",
+    )
+    argv = parser.parse_args()
+    main(argv)
