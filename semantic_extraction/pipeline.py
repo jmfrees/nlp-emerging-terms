@@ -17,7 +17,7 @@ def main(argv):
     # end imports
 
     print("Reading data")
-    models_path = argv.map_dir
+    models_path = argv.model_dir
     filename = argv.file
     file_ext = argv.extension
     filepath = os.path.join(".", "datasets", filename + file_ext)
@@ -86,7 +86,7 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "-m",
-        "--map-dir",
+        "--model-dir",
         type=str,
         default=os.path.join(".", "models"),
         help="Path to models dir",
