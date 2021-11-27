@@ -20,7 +20,8 @@ def main(argv):
     models_path = argv.model_dir
     filename = argv.file
     file_ext = argv.extension
-    filepath = os.path.join(".", "datasets", filename + file_ext)
+    filepath = os.path.join("semantic_extraction", "datasets", filename + file_ext)
+    retrain_model_path = argv.retrain
     model_type = argv.type  # "tfidf" or "w2v"
 
     data = list(CorpusReader(filepath))
@@ -48,25 +49,31 @@ def main(argv):
         model = TfidfModel.load(tfidf_model_path)
     if model_type == "w2v":
         print("Creating Word2Vec Model")
-        # model = Word2Vec.load(os.path.join(models_path, "g4boyz6m-prejuly4phrases.model"))
-        w2v_model_path = os.path.join(models_path, f"{filename}-w2v-model.pkl")
+        model = Word2Vec.load(retrain_model_path) if retrain_model_path else None
+        w2v_model_path = os.path.join(models_path, f"{filename}-w2v-model.model")
         if not os.path.isfile(w2v_model_path):
-            model = Word2Vec(
-                sentences=phrase_model[data],
-                vector_size=256,
-                window=5,
-                min_count=10,
-                workers=4,
-                sg=1,
-            )
-            # model.train(data, total_examples=len(data), epochs=1)
+            if not model:
+                model = Word2Vec(
+                    sentences=phrase_model[data],
+                    vector_size=256,
+                    window=5,
+                    min_count=10,
+                    workers=4,
+                    sg=1,
+                )
+            else:  # retrain
+                model.build_vocab(phrase_model[data], update=True)
+                model.train(
+                    phrase_model[data],
+                    total_examples=model.corpus_count,
+                    epochs=model.epochs,
+                )
             print("Saving Word2Vec model")
             model.save(w2v_model_path)
         model = Word2Vec.load(w2v_model_path)
 
 
 if __name__ == "__main__":
-    # TODO: Add argparse
     parser = argparse.ArgumentParser(description="Semantic-Extraction Pipeline")
     parser.add_argument("file", type=str, help="Name of dataset file in datasets dir")
     parser.add_argument(
@@ -81,15 +88,22 @@ if __name__ == "__main__":
         "--type",
         type=str,
         choices=["tfidf", "w2v"],
-        default="tfidf",
+        default="w2v",
         help="Model type",
     )
     parser.add_argument(
         "-m",
         "--model-dir",
         type=str,
-        default=os.path.join(".", "models"),
+        default=os.path.join("semantic_extraction", "models"),
         help="Path to models dir",
+    )
+    parser.add_argument(
+        "-r",
+        "--retrain",
+        type=str,
+        default=None,
+        help="Path to model to retrain (only useful for w2v)",
     )
     argv = parser.parse_args()
     main(argv)
