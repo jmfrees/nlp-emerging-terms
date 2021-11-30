@@ -66,6 +66,10 @@ def main(args):
         args.output, top_terms_set, missing_terms, extra_terms, precision, recall, f1
     )
 
+    # TODO: add option to evaluate top terms manually to get accurate precision
+    # and f1 scores
+    # This could be kinda fancy with curses or something
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
