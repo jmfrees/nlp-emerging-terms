@@ -19,6 +19,7 @@ def main(argv):
 
     print("Reading data")
     models_path = argv.model_dir
+    # TODO: refine this to be derrived from dataset path
     filename = argv.file
     file_ext = argv.extension
     filepath = os.path.join("semantic_extraction", "datasets", filename + file_ext)
