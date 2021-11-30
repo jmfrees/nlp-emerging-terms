@@ -12,6 +12,7 @@ LOG = logging.getLogger(__name__)
 
 def write_results(
     fp: str,
+    all_terms: Iterable[str],
     missing_terms: Iterable[str],
     extra_terms: Iterable[str],
     precision: float,
@@ -20,6 +21,7 @@ def write_results(
 ):
     # make dictionary of results
     results = {
+        "all_terms": list(all_terms),
         "missing_terms": list(missing_terms),
         "extra_terms": list(extra_terms),
         "precision": precision,
@@ -40,14 +42,9 @@ def main(args):
 
     # load w2v model and get top x terms related to our chosen term
     w2v_model = Word2Vec.load(args.model)
+    LOG.info("Number of terms in model: %d" % len(w2v_model.wv))
 
-    # compare and graph cosine similarity and f2 score between top 2 terms to find
-    # cosine similarity threshold
-    # TODO: Not sure what to do with this yet
-    # this is supposed to be based on some sort of optimization run of
-    # something? Read the paper?
-
-    top_terms = w2v_model.wv.most_similar(positive=[args.term], topn=100)
+    top_terms = w2v_model.wv.most_similar(positive=[args.term], topn=args.top_n)
     top_terms_set = set(
         str(term[0]) for term in top_terms
     )  # cast to `str` is just for type checking
@@ -62,10 +59,12 @@ def main(args):
     f1 = 0
     if (precision + recall) != 0:
         f1 = 2 * precision * recall / (precision + recall)
-    LOG.info("Precision: {}".format(precision))
-    LOG.info("Recall: {}".format(recall))
-    LOG.info("F1: {}".format(f1))
-    write_results(args.output, missing_terms, extra_terms, precision, recall, f1)
+    LOG.info(f"*Precision: {precision} (* provisional)")
+    LOG.info(f"Recall: {recall}")
+    LOG.info(f"*F1: {f1}")
+    write_results(
+        args.output, top_terms_set, missing_terms, extra_terms, precision, recall, f1
+    )
 
 
 if __name__ == "__main__":
@@ -82,17 +81,12 @@ if __name__ == "__main__":
         type=str,
         default="semantic_extraction/gold_standard.txt",
     )
-    parser.add_argument("--top_terms", type=int, default=100)
+    parser.add_argument("--top-n", type=int, default=100)
     parser.add_argument(
         "-o",
         "--output",
         type=str,
         default="output.txt",
-    )
-    parser.add_argument(
-        "--cosine-similarity-threshold",
-        type=float,
-        default=0.5,
     )
     parser.add_argument(
         "-t",
