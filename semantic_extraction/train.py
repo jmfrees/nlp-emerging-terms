@@ -3,8 +3,6 @@ import os
 import argparse
 from typing import List
 
-from gensim.corpora import dictionary
-
 
 def main(argv):
 
