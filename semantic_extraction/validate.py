@@ -1,29 +1,22 @@
 # STL
+import logging
+import argparse
 from typing import Set
 
 # PDM
 from gensim.models import Word2Vec
 
-# open gold standard term list and create set of terms
-# load w2v model and get top x terms related to our chosen term
-# compare and graph cosine similarity and f2 score between top 2 terms to find
-# cosine similarity threshold
-
-# compare top x terms to gold standard terms
-# print and write out the top x terms
-# if any terms are missing, print out the missing terms
-# if any terms are extra, print out the extra terms
-# print precision, recall, and f1 score as a table
+LOG = logging.getLogger(__name__)
 
 
-def main():
+def main(args):
     # open gold standard term list and create set of terms
     gold_standard_terms = set()
-    with open("", "r") as f:
+    with open(args.gold_standard, "r") as f:
         gold_standard_terms = set(line.strip() for line in f)
 
     # load w2v model and get top x terms related to our chosen term
-    w2v_model = Word2Vec.load("")
+    w2v_model = Word2Vec.load(args.model)
 
     # compare and graph cosine similarity and f2 score between top 2 terms to find
     # cosine similarity threshold
@@ -31,12 +24,7 @@ def main():
     # this is supposed to be based on some sort of optimization run of
     # something? Read the paper?
 
-    # compare top x terms to gold standard terms
-    # print and write out the top x terms
-    # if any terms are missing, print out the missing terms
-    # if any terms are extra, print out the extra terms
-    # print precision, recall, and f1 score as a table
-    top_terms = w2v_model.wv.most_similar(positive=[""], topn=100)
+    top_terms = w2v_model.wv.most_similar(positive=[args.term], topn=100)
     top_terms_set = set(
         str(term[0]) for term in top_terms
     )  # cast to `str` is just for type checking
@@ -48,20 +36,41 @@ def main():
     print("Precision: {}".format(precision))
     print("Recall: {}".format(recall))
     print("F1: {}".format(f1))
-    with open("", "w") as f:
+    with open(args.output, "w") as f:
         f.write("\n".join(missing_terms))
         f.write("\n")
         f.write("\n".join(extra_terms))
 
 
 if __name__ == "__main__":
-    # TODO: Add argparse
-    # get model path from argparse default to model in semantic_extraction/models
-    # get gold standard path from argparse default to list in base directory
-    # get top x terms from argparse default to 100
-    # get output path from argparse default to output in base directory
-    # get cosine similarity threshold from argparse default to 0.5?
-    # get
-    # TODO: Add logging
-
-    main()
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "-m",
+        "--model",
+        type=str,
+        default="semantic_extraction/models/w2v_model.model",
+    )
+    parser.add_argument(
+        "--gold-standard",
+        type=str,
+        default="semantic_extraction/gold_standard.txt",
+    )
+    parser.add_argument("--top_terms", type=int, default=100)
+    parser.add_argument(
+        "-o",
+        "--output",
+        type=str,
+        default="semantic_extraction/output.txt",
+    )
+    parser.add_argument(
+        "--cosine-similarity-threshold",
+        type=float,
+        default=0.5,
+    )
+    parser.add_argument(
+        "--term",
+        type=str,
+        default="",
+    )
+    args = parser.parse_args()
+    main(args)
