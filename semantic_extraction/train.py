@@ -3,8 +3,6 @@ import os
 import argparse
 from typing import List
 
-from gensim.corpora import dictionary
-
 
 def main(argv):
 
@@ -29,19 +27,6 @@ def main(argv):
 
     data: List[List[str]] = list(CorpusReader(filepath))
 
-    print("Creating phrase Model")
-    phrase_model_path = os.path.join(models_path, f"{filename}-phrase-model.pkl")
-    if not os.path.isfile(phrase_model_path):
-        phrase_model = Phrases(
-            data, min_count=5, threshold=1, connector_words=ENGLISH_CONNECTOR_WORDS
-        )
-
-        print("Saving phrase model")
-        frozen_model = phrase_model.freeze()
-        frozen_model.save(phrase_model_path)
-
-    phrase_model: Phrases = Phrases.load(phrase_model_path)
-
     if model_type == "tfidf":
         print("Creating TFIDF Model")
         tfidf_model_path = os.path.join(models_path, f"{filename}-tfidf-model.pkl")
@@ -54,6 +39,18 @@ def main(argv):
             model.save(tfidf_model_path)
         model = TfidfModel.load(tfidf_model_path)
     if model_type == "w2v":
+        print("Creating phrase Model")
+        phrase_model_path = os.path.join(models_path, f"{filename}-phrase-model.pkl")
+        if not os.path.isfile(phrase_model_path):
+            phrase_model = Phrases(
+                data, min_count=5, threshold=1, connector_words=ENGLISH_CONNECTOR_WORDS
+            )
+
+            print("Saving phrase model")
+            frozen_model = phrase_model.freeze()
+            frozen_model.save(phrase_model_path)
+        phrase_model: Phrases = Phrases.load(phrase_model_path)
+
         print("Creating Word2Vec Model")
         model = Word2Vec.load(retrain_model_path) if retrain_model_path else None
         w2v_model_path = os.path.join(models_path, f"{filename}-w2v-model.model")
