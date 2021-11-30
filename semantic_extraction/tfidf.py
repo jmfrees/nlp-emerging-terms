@@ -3,7 +3,7 @@ import os
 from collections import Counter
 
 # PDM
-from gensim.models import Phrases, TfidfModel
+from gensim.models import TfidfModel
 from gensim.corpora import Dictionary
 
 # LOCAL
