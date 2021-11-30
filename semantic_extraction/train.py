@@ -24,7 +24,7 @@ def main(argv):
     retrain_model_path = argv.retrain
     model_type = argv.type  # "tfidf" or "w2v"
 
-    data = list(CorpusReader(filepath))
+    data: List[List[str]] = list(CorpusReader(filepath))
 
     print("Creating phrase Model")
     phrase_model_path = os.path.join(models_path, f"{filename}-phrase-model.pkl")
@@ -37,7 +37,7 @@ def main(argv):
         frozen_model = phrase_model.freeze()
         frozen_model.save(phrase_model_path)
 
-    phrase_model = Phrases.load(phrase_model_path)
+    phrase_model: Phrases = Phrases.load(phrase_model_path)
 
     if model_type == "tfidf":
         print("Creating TFIDF Model")
