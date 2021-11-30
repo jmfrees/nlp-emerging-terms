@@ -18,7 +18,8 @@ filepath = os.path.join(".", "datasets", filename + file_ext)
 data = list(CorpusReader(filepath))
 dct = Dictionary()
 # Needs BoW to be created for checking against model??
-model = TfidfModel(dictionary=dct)
+Bag_of_Words = [dct.doc2bow(doc, allow_update=True) for doc in data]
+model = TfidfModel(Bag_of_Words)
 
 
 counter = Counter()
