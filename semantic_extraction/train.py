@@ -27,19 +27,6 @@ def main(argv):
 
     data: List[List[str]] = list(CorpusReader(filepath))
 
-    print("Creating phrase Model")
-    phrase_model_path = os.path.join(models_path, f"{filename}-phrase-model.pkl")
-    if not os.path.isfile(phrase_model_path):
-        phrase_model = Phrases(
-            data, min_count=5, threshold=1, connector_words=ENGLISH_CONNECTOR_WORDS
-        )
-
-        print("Saving phrase model")
-        frozen_model = phrase_model.freeze()
-        frozen_model.save(phrase_model_path)
-
-    phrase_model: Phrases = Phrases.load(phrase_model_path)
-
     if model_type == "tfidf":
         print("Creating TFIDF Model")
         tfidf_model_path = os.path.join(models_path, f"{filename}-tfidf-model.pkl")
