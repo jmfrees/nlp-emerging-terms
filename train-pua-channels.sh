@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/usr/bin/env bash
 pdm run python semantic_extraction/train.py pua-channels-210101-210201 -t w2v
 pdm run python semantic_extraction/train.py pua-channels-210201-210301 -t w2v --retrain semantic_extraction/models/pua-channels-210101-210201-w2v-model.model 
 pdm run python semantic_extraction/train.py pua-channels-210301-210401 -t w2v --retrain semantic_extraction/models/pua-channels-210201-210301-w2v-model.model 
