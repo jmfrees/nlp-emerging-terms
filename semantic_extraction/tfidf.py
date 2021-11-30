@@ -3,7 +3,7 @@ import os
 from collections import Counter
 
 # PDM
-from gensim.models import Phrases, TfidfModel
+from gensim.models import TfidfModel
 from gensim.corpora import Dictionary
 
 # LOCAL
@@ -16,15 +16,14 @@ file_ext = ".csv"
 filepath = os.path.join(".", "datasets", filename + file_ext)
 
 data = list(CorpusReader(filepath))
-prases = Phrases.load(f"models/{filename}-phrase-model.pkl")
-corpus = prases[data]
-dct = Dictionary(corpus)
+dct = Dictionary()
 # Needs BoW to be created for checking against model??
-model = TfidfModel(dictionary=dct)
+Bag_of_Words = [dct.doc2bow(doc, allow_update=True) for doc in data]
+model = TfidfModel(Bag_of_Words)
 
 
 counter = Counter()
-for d in corpus:
+for d in Bag_of_Words:
     if not d:
         continue
     max_word = max(map(lambda k: (dct[k[0]], k[1]), model[d]), key=lambda x: x[1])[0]
