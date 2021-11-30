@@ -1,7 +1,8 @@
 # STL
+import json
 import logging
 import argparse
-from typing import Set
+from typing import Set, Iterable
 
 # PDM
 from gensim.models import Word2Vec
@@ -9,12 +10,33 @@ from gensim.models import Word2Vec
 LOG = logging.getLogger(__name__)
 
 
+def write_results(
+    fp: str,
+    missing_terms: Iterable[str],
+    extra_terms: Iterable[str],
+    precision: float,
+    recall: float,
+    f1: float,
+):
+    # make dictionary of results
+    results = {
+        "missing_terms": list(missing_terms),
+        "extra_terms": list(extra_terms),
+        "precision": precision,
+        "recall": recall,
+        "f1": f1,
+    }
+    # write results to file as json
+    with open(fp, "w") as f:
+        json.dump(results, f)
+
+
 def main(args):
     # open gold standard term list and create set of terms
     gold_standard_terms = set()
     with open(args.gold_standard, "r") as f:
         gold_standard_terms = set(line.strip() for line in f)
-    print(gold_standard_terms)
+    LOG.debug("Gold standard terms: %s" % gold_standard_terms)
 
     # load w2v model and get top x terms related to our chosen term
     w2v_model = Word2Vec.load(args.model)
@@ -29,24 +51,21 @@ def main(args):
     top_terms_set = set(
         str(term[0]) for term in top_terms
     )  # cast to `str` is just for type checking
-    print(top_terms)
-    print(top_terms_set)
+    LOG.debug("Top terms: %s" % top_terms)
+    LOG.debug("Top Terms set: %s" % top_terms_set)
     missing_terms = gold_standard_terms - top_terms_set
     extra_terms: Set[str] = top_terms_set - gold_standard_terms
-    print(missing_terms)
-    print(extra_terms)
+    LOG.debug("Missing terms: %s" % missing_terms)
+    LOG.debug("Extra terms: %s" % extra_terms)
     precision = len(top_terms_set & gold_standard_terms) / len(top_terms_set)
     recall = len(top_terms_set & gold_standard_terms) / len(gold_standard_terms)
     f1 = 0
     if (precision + recall) != 0:
         f1 = 2 * precision * recall / (precision + recall)
-    print("Precision: {}".format(precision))
-    print("Recall: {}".format(recall))
-    print("F1: {}".format(f1))
-    with open(args.output, "w") as f:
-        f.write("\n".join(missing_terms))
-        f.write("\n")
-        f.write("\n".join(extra_terms))
+    LOG.info("Precision: {}".format(precision))
+    LOG.info("Recall: {}".format(recall))
+    LOG.info("F1: {}".format(f1))
+    write_results(args.output, missing_terms, extra_terms, precision, recall, f1)
 
 
 if __name__ == "__main__":
@@ -81,5 +100,20 @@ if __name__ == "__main__":
         type=str,
         default="",
     )
+    parser.add_argument(
+        "-l",
+        "--log",
+        dest="log_level",
+        default="INFO",
+        type=str.upper,
+        choices=["NOTSET", "DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
+        help=("NOTSET, DEBUG, INFO, WARNING, ERROR, or CRITICAL (default=INFO)"),
+        metavar="LVL",
+    )
     args = parser.parse_args()
+
+    logging.basicConfig(
+        format="[%(asctime)s] [%(filename)22s:%(lineno)-4s] [%(levelname)8s]   %(message)s",
+        level=logging.getLevelName(args.log_level),
+    )
     main(args)
