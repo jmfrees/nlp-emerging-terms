@@ -16,9 +16,7 @@ file_ext = ".csv"
 filepath = os.path.join(".", "datasets", filename + file_ext)
 
 data = list(CorpusReader(filepath))
-prases = Phrases.load(f"models/{filename}-phrase-model.pkl")
-corpus = prases[data]
-dct = Dictionary(corpus)
+dct = Dictionary()
 # Needs BoW to be created for checking against model??
 model = TfidfModel(dictionary=dct)
 
