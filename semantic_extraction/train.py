@@ -1,6 +1,9 @@
 # STL
 import os
 import argparse
+from typing import List
+
+from gensim.corpora import dictionary
 
 
 def main(argv):
@@ -43,8 +46,11 @@ def main(argv):
         print("Creating TFIDF Model")
         tfidf_model_path = os.path.join(models_path, f"{filename}-tfidf-model.pkl")
         if not os.path.isfile(tfidf_model_path):
-            dct = Dictionary(phrase_model[data])
-            model = TfidfModel(dictionary=dct)
+            dct = Dictionary()
+            # Bag_of_Words is a corpus
+            Bag_of_Words = [dct.doc2bow(doc, allow_update=True) for doc in data]
+            # word2id = [[(dct[id], count) for id, count in line] for line in Bag_of_Words]
+            model = TfidfModel(Bag_of_Words)
             model.save(tfidf_model_path)
         model = TfidfModel.load(tfidf_model_path)
     if model_type == "w2v":
