@@ -22,7 +22,7 @@ model = TfidfModel(dictionary=dct)
 
 
 counter = Counter()
-for d in corpus:
+for d in Bag_of_Words:
     if not d:
         continue
     max_word = max(map(lambda k: (dct[k[0]], k[1]), model[d]), key=lambda x: x[1])[0]
