@@ -35,11 +35,11 @@ def main(args):
         positive=[args.term], topn=args.top_n
     )
     top_previous_terms_set = set([term[0] for term in top_previous_terms])
-    LOG.info(f"Top terms for {args.term} in previous model: {top_previous_terms}")
+    LOG.debug(f"Top terms for {args.term} in previous model: {top_previous_terms}")
 
     top_next_terms = next_model.wv.most_similar(positive=[args.term], topn=args.top_n)
     top_next_terms_set = set([term[0] for term in top_next_terms])
-    LOG.info(f"Top terms for {args.term} in next model: {top_next_terms}")
+    LOG.debug(f"Top terms for {args.term} in next model: {top_next_terms}")
 
     intersecting_terms = set(top_previous_terms).intersection(set(top_next_terms))
 
