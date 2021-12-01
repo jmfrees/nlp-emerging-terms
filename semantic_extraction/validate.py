@@ -90,7 +90,7 @@ if __name__ == "__main__":
         "-o",
         "--output",
         type=str,
-        default="output.txt",
+        default="validation-output.json",
     )
     parser.add_argument(
         "-t",
