@@ -53,10 +53,17 @@ def main(argv):
         phrase_model: Phrases = Phrases.load(phrase_model_path)
 
         print("Creating Word2Vec Model")
-        model = Word2Vec.load(retrain_model_path) if retrain_model_path else None
         w2v_model_path = os.path.join(models_path, f"{filename}-w2v-model.model")
         if not os.path.isfile(w2v_model_path):
-            if not model:
+            if retrain_model_path:
+                model = Word2Vec.load(retrain_model_path)
+                model.build_vocab(phrase_model[data], update=True)
+                model.train(
+                    phrase_model[data],
+                    total_examples=model.corpus_count,
+                    epochs=model.epochs,
+                )
+            else:
                 model = Word2Vec(
                     sentences=phrase_model[data],
                     vector_size=256,
@@ -64,13 +71,6 @@ def main(argv):
                     min_count=10,
                     workers=4,
                     sg=1,
-                )
-            else:  # retrain
-                model.build_vocab(phrase_model[data], update=True)
-                model.train(
-                    phrase_model[data],
-                    total_examples=model.corpus_count,
-                    epochs=model.epochs,
                 )
             print("Saving Word2Vec model")
             model.save(w2v_model_path)
@@ -107,6 +107,7 @@ if __name__ == "__main__":
         "--retrain",
         type=str,
         default=None,
+        metavar="PATH",
         help="Path to model to retrain (only useful for w2v)",
     )
     argv = parser.parse_args()
