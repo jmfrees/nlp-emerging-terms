@@ -12,6 +12,8 @@ Most of the major methods of execution are covered by targets within a `Makefile
 
 ...
 
+### NOTE: training on the full dataset consumed over 110 GB of ram. And took 7+ hours
+
 TODO: fill out explanation/instructions for running
 
 ### Authors: Jonathan Frees (jmfrees@uab.edu), Jan Foksinski (jkf@uab.edu)
