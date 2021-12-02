@@ -2,6 +2,21 @@
 import os
 import argparse
 from typing import List
+from pathlib import PurePath
+from collections import namedtuple
+
+
+def parse_file_path(fp: str):
+    """
+    Parses a file path into a NamedTuple of its components.
+    (fp) -> {'path': str, 'filename': str, 'extension': str}
+    :param fp: The file path to parse.
+    :return: A dictionary of the components of the file path.
+    """
+    path = PurePath(fp)
+    return namedtuple("FilePath", "path filename extension")(
+        str(path), path.stem, path.suffix
+    )
 
 
 def main(argv):
@@ -19,10 +34,9 @@ def main(argv):
 
     print("Reading data")
     models_path = argv.model_dir
-    # TODO: refine this to be derrived from dataset path
-    filename = argv.file
-    file_ext = argv.extension
-    filepath = os.path.join("semantic_extraction", "datasets", filename + file_ext)
+    dataset_path_parts = parse_file_path(argv.file)
+    filename = dataset_path_parts.filename
+    filepath = dataset_path_parts.path
     retrain_model_path = argv.retrain
     model_type = argv.type  # "tfidf" or "w2v"
 
@@ -79,14 +93,7 @@ def main(argv):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Semantic-Extraction Pipeline")
-    parser.add_argument("file", type=str, help="Name of dataset file in datasets dir")
-    parser.add_argument(
-        "-x",
-        "--extension",
-        type=str,
-        default=".csv",
-        help="Extension of the dataset file",
-    )
+    parser.add_argument("file", type=str, help="Path to dataset to train on")
     parser.add_argument(
         "-t",
         "--type",
