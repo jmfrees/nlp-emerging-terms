@@ -1,6 +1,6 @@
 download:
 	@echo "Downloading and unzipping dataset..."
-	curl -L -O https://www.dropbox.com/s/lqlb2mtwyzat09j/telegram_dataset.zip?dl=1
+	curl -L -o telegram_dataset.zip https://www.dropbox.com/s/lqlb2mtwyzat09j/telegram_dataset.zip?dl=1
 	@echo "Download complete."
 	@echo "Unzipping dataset..."
 	unzip telegram_dataset.zip -d semantic_extraction/
@@ -21,7 +21,7 @@ train:
 
 validate:
 	@echo "Testing model..."
-	pdm run python semantic_extraction/validate.py --model semantic_extraction/models/pua-channels-all-w2v-model.model -T fraud_terms -t pua
+	pdm run python semantic_extraction/validate.py --model semantic_extraction/models/pua-channels-all-w2v-model.model -T fraud_terms -t pua --top-n 200
 	@echo "Done."
 
 test-emerging:
