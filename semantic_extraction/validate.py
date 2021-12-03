@@ -20,6 +20,7 @@ def write_results(
     f1: float,
 ):
     # make dictionary of results
+    LOG.info("Writing results to %s" % fp)
     results = {
         "all_terms": list(all_terms),
         "missing_terms": list(missing_terms),

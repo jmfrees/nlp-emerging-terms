@@ -20,6 +20,7 @@ def get_new_terms(previous_terms, next_terms):
 
 # write emerging terms to file given set of terms
 def write_emerging_terms(emerging_terms, output_file):
+    LOG.info("Writing results to %s" % output_file)
     with open(output_file, "w") as f:
         for term in emerging_terms:
             f.write(term + "\n")
