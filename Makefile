@@ -1,6 +1,6 @@
 download:
 	@echo "Downloading and unzipping dataset..."
-	curl -L -o telegram_dataset.zip https://www.dropbox.com/s/lqlb2mtwyzat09j/telegram_dataset.zip?dl=1
+	curl -L -o telegram_dataset.zip https://lab-bucket-for-uab.s3.amazonaws.com/telegram_dataset.zip
 	@echo "Download complete."
 	@echo "Unzipping dataset..."
 	unzip telegram_dataset.zip -d semantic_extraction/

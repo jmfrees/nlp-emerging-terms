@@ -11,10 +11,12 @@ Please install `pdm` before continuing. See installation instructions [here](htt
 Running the code is as simple as running some [make commands](#make-targets)
 
 1. `$ make init`
-2. You can now run any of the `train`, `validate`, or `test-emerging`
+2. You can now run any of the `train`, `validate`, or `test-emerging` targets
 
-Training will take some time. But you can run the first couple if you would
-like to test that. `validate` and `test-emerging` will work right away because of the inclusion
+Training will take some time. But you can run the first couple of training
+iterations if you would like to test that.
+
+`validate` and `test-emerging` will work right away because of the inclusion
 of the pre-trained models.
 
 ## Make targets
