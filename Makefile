@@ -1,5 +1,4 @@
 download:
-	@echo "TODO: Finish this"
 	@echo "Downloading and unzipping dataset..."
 	curl -L -O https://www.dropbox.com/s/lqlb2mtwyzat09j/telegram_dataset.zip?dl=1
 	@echo "Download complete."
