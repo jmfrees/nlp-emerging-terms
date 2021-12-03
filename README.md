@@ -28,6 +28,9 @@ Most of the major methods of execution are covered by targets within a `Makefile
 - `make validate`: Run validation script on all channels trained model
 - `make test-emerging`: Test emerging terms script between two models
 
+All scripts can be run with `pdm run python <script.py> --help` to see options
+for running.
+
 ---
 
 #### NOTE: training on the full dataset consumed over 110 GB of ram. And took 7+ hours
